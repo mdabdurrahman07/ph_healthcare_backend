@@ -1,6 +1,6 @@
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import express, { Application, Request, Response } from "express";
+import express, { type Application, type Request, type Response } from "express";
 import httpStatus from "http-status";
 import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
