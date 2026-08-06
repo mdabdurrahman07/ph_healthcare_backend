@@ -1,6 +1,6 @@
-import  cors  from "cors";
-import  cookieParser  from "cookie-parser";
-import express, { Application, Request, Response } from "express"
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import express, { Application, Request, Response } from "express";
 import httpStatus from "http-status";
 import config from "./app/config";
 import { globalErrorHandler } from "./app/middleware/globalErrorHandler";
@@ -10,10 +10,10 @@ import { AuthRoutes } from "./app/module/auth/auth.route";
 const app: Application = express();
 
 app.use(
-  cors({
-    origin: config.frontend_url,
-    credentials: true,
-  }),
+	cors({
+		origin: config.frontend_url,
+		credentials: true,
+	}),
 );
 
 // Enable URL-encoded form data parsing
@@ -27,10 +27,10 @@ app.use("/api/v1/auth", AuthRoutes);
 
 // Basic route
 app.get("/", async (req: Request, res: Response) => {
-  res.status(httpStatus.OK).json({
-    success: true,
-    message: "Welcome to PH Healthcare System Backend",
-  });
+	res.status(httpStatus.OK).json({
+		success: true,
+		message: "Welcome to PH Healthcare System Backend",
+	});
 });
 
 app.use(globalErrorHandler);
