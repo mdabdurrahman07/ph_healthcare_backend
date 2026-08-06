@@ -41,3 +41,5 @@ app.use(globalErrorHandler);
 app.use(notFound);
 
 export default app;
+
+// The TypeScript version used in this project is : 6.0.0-dev.20260416
