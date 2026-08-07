@@ -13,4 +13,5 @@ router.get(
 	AuthController.getMe,
 );
 router.post("/refresh-token", AuthController.refreshToken);
+router.post("/google", AuthController.googleService);
 export const AuthRoutes = router;

@@ -82,6 +82,33 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 	});
 });
 
+const googleService = catchAsync(async (req: Request, res: Response) => {
+	const payload = req.body;
+	const response = await AuthService.googleService(payload);
+	const { accessToken, refreshToken } = response;
+
+	res.cookie("accessToken", accessToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24, // 24 hour or 1 day
+	});
+	res.cookie("refreshToken", refreshToken, {
+		httpOnly: true,
+		secure: false,
+		sameSite: "none",
+		maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+	});
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Google Login Successful",
+		data: {
+			accessToken,
+			refreshToken,
+		},
+	});
+});
 const refreshToken = catchAsync(async (req: Request, res: Response) => {
 	if (!req.cookies.refreshToken) {
 		throw new Error("Refresh token is missing");
@@ -118,4 +145,5 @@ export const AuthController = {
 	loginUser,
 	getMe,
 	refreshToken,
+	googleService,
 };
