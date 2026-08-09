@@ -32,7 +32,6 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 			name,
 			email,
 			password: hashedPassword,
-			googleId: "local",
 			role: Role.PATIENT,
 			status: UserStatus.ACTIVE,
 			emailVerified: false,
