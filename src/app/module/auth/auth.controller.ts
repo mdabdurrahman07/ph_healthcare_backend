@@ -144,23 +144,23 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 const forgotPassword = catchAsync(async (req: Request, res: Response) => {
   const payload = req.body;
 
-  const result = await AuthService.forgotPasswordService(payload);
-  sendResponse(res, {
+   await AuthService.forgotPasswordService(payload);
+   sendResponse(res, {
     success: true,
-    message: "forget password api hit",
+    message: `OPT Sent to : ${payload.email}`,
     statusCode: httpStatus.OK,
-    data: result,
+    data: null
   });
 });
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
 	const payload = req.body;
 
-  const result = await AuthService.resetPasswordService(payload);
+  await AuthService.resetPasswordService(payload);
   sendResponse(res, {
     success: true,
-    message: "reset password api hit",
+    message: `Password Changed Successfully`,
     statusCode: httpStatus.OK,
-    data: result,
+    data: null
   });
 });
 
