@@ -16,6 +16,7 @@ import { googleClient } from "../../lib/googleAuth";
 import type { TokenPayload } from "google-auth-library";
 import crypto from "crypto"
 import { redisClient } from "../../lib/redis";
+import { transporter } from "../../lib/nodemailer";
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const { name, password } = payload;
@@ -354,6 +355,13 @@ const forgotPasswordService = async (payload:IForgotPasswordPayload) => {
 			}
 		}
 	)
+
+	await transporter.sendMail({
+		from: config.send_email,
+		to: isUserExist.email,
+		subject: "Forgot Password",
+	    text: `Your OTP is ${opt}`
+	})
 }
 const resetPasswordService = async (payload:IResetPasswordPayload) => {
 	const {email, newPassword, opt} = payload
@@ -401,6 +409,14 @@ const resetPasswordService = async (payload:IResetPasswordPayload) => {
 		}
 	})
 	await redisClient.del([key])
+
+	await transporter.sendMail({
+		from: config.send_email,
+		to: isUserExist.email,
+		subject: "Password Changed",
+		text: `Your password has been reset successfully`
+	})
+
 }
 
 export const AuthService = {

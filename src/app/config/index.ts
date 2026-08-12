@@ -27,5 +27,9 @@ export default {
 	redis_user: process.env.REDIS_USER! as string,
 	redis_password: process.env.REDIS_PASSWORD! as string,
 	redis_host: process.env.REDIS_HOST! as string,
-	redis_port: process.env.REDIS_PORT!
+	redis_port: process.env.REDIS_PORT!,
+	google_app_smtp_user : process.env.GOOGLE_APP_SMTP_USER!,
+	google_app_smtp_password : process.env.GOOGLE_APP_SMTP_PASSWORD!,
+	send_email : process.env.EMAIL_SENDER!
+	
 };
