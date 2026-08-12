@@ -31,5 +31,5 @@ export interface IForgotPasswordPayload{
 export interface IResetPasswordPayload{
 	email: string,
 	newPassword: string,
-	opt: string
+	otp: string
 }

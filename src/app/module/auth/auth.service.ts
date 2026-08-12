@@ -17,6 +17,8 @@ import type { TokenPayload } from "google-auth-library";
 import crypto from "crypto"
 import { redisClient } from "../../lib/redis";
 import { transporter } from "../../lib/nodemailer";
+import path from "path";
+import ejs from "ejs"
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
 	const { name, password } = payload;
@@ -345,10 +347,10 @@ const forgotPasswordService = async (payload:IForgotPasswordPayload) => {
 		throw new Error("User has Account with Google")
 	}
 
-	const opt = crypto.randomInt(100000, 1000000).toString()
-	const key = `forget-password-opt:${isUserExist.email}`
+	const otp = crypto.randomInt(100000, 1000000).toString()
+	const key = `forget-password-otp:${isUserExist.email}`
 	await redisClient.set(
-		key, opt, {
+		key, otp, {
 			expiration: {
 				type: "EX",
 				value: 5 * 60
@@ -356,15 +358,25 @@ const forgotPasswordService = async (payload:IForgotPasswordPayload) => {
 		}
 	)
 
+	// ejs html template
+
+	const templatePath = path.join(process.cwd(), 'src/app/templates/forgot-password.ejs')
+
+	const forgotPasswordHtmlContent =  await ejs.renderFile(templatePath, {
+		otp: otp,
+		expiryMinutes: 5,
+		userName: isUserExist.name
+	})
+
 	await transporter.sendMail({
 		from: config.send_email,
 		to: isUserExist.email,
 		subject: "Forgot Password",
-	    text: `Your OTP is ${opt}`
+	    html: forgotPasswordHtmlContent
 	})
 }
 const resetPasswordService = async (payload:IResetPasswordPayload) => {
-	const {email, newPassword, opt} = payload
+	const {email, newPassword, otp} = payload
 	const isUserExist = await prisma.user.findUnique({
 		where:{
 			email
@@ -387,14 +399,14 @@ const resetPasswordService = async (payload:IResetPasswordPayload) => {
 		throw new Error("User has Account with Google")
 	}
 
-	const key = `forget-password-opt:${isUserExist.email}`
+	const key = `forget-password-otp:${isUserExist.email}`
 
 	const redisOtp = await redisClient.get(key)
 
 	if(!redisOtp){
 		throw new Error("Invalid OTP")
 	}
-	if(redisOtp !== opt){
+	if(redisOtp !== otp){
 		throw new Error("OTP Does not match")
 
 	}
@@ -410,11 +422,20 @@ const resetPasswordService = async (payload:IResetPasswordPayload) => {
 	})
 	await redisClient.del([key])
 
+	// ejs html template
+
+	const templatePath = path.join(process.cwd(), 'src/app/templates/password-reset-success.ejs')
+
+	const passwordResetSuccessHtmlContext = await ejs.renderFile(templatePath,{
+		userName: isUserExist.name,
+		loginUrl: config.login_url
+	})
+
 	await transporter.sendMail({
 		from: config.send_email,
 		to: isUserExist.email,
-		subject: "Password Changed",
-		text: `Your password has been reset successfully`
+		subject: "Password Reset Successful",
+		html: passwordResetSuccessHtmlContext
 	})
 
 }

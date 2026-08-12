@@ -147,7 +147,7 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
    await AuthService.forgotPasswordService(payload);
    sendResponse(res, {
     success: true,
-    message: `OPT Sent to : ${payload.email}`,
+    message: `OTP Sent to : ${payload.email}`,
     statusCode: httpStatus.OK,
     data: null
   });
