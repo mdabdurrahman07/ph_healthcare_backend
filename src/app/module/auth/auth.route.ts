@@ -4,10 +4,20 @@ import { AuthController } from "./auth.controller";
 import { Role } from "../../../../generated/enums";
 import { validateRequest } from "../../middleware/validateRequest";
 import { patientRegistrationSchema } from "../../utils/zodSchemas/patientRegistrationSchema";
+import { patientEmailVerificationSchema } from "../../utils/zodSchemas/patientEmailVerificationSchema";
 
 const router = Router();
 
-router.post("/register", validateRequest(patientRegistrationSchema), AuthController.registerPatient);
+router.post(
+	"/register",
+	validateRequest(patientRegistrationSchema),
+	AuthController.registerPatient,
+);
+router.post(
+	"/verification",
+	validateRequest(patientEmailVerificationSchema),
+	AuthController.verifyPatient,
+);
 router.post("/login", AuthController.loginUser);
 router.get(
 	"/me",
@@ -16,6 +26,6 @@ router.get(
 );
 router.post("/refresh-token", AuthController.refreshToken);
 router.post("/google", AuthController.googleService);
-router.post('/forgot-password', AuthController.forgotPassword)
-router.post('/reset-password', AuthController.resetPassword)
+router.post("/forgot-password", AuthController.forgotPassword);
+router.post("/reset-password", AuthController.resetPassword);
 export const AuthRoutes = router;
