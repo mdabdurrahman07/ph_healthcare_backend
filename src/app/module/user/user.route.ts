@@ -6,6 +6,11 @@ import { Role } from "../../../../generated/enums";
 
 const router = Router();
 
-router.patch("/profile-image", auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN) , upload.single("profileImage") ,userControllers.uploadProfileImageController);
+router.patch(
+	"/profile-image",
+	auth(Role.ADMIN, Role.DOCTOR, Role.PATIENT, Role.SUPER_ADMIN),
+	upload.single("profileImage"),
+	userControllers.uploadProfileImageController,
+);
 
 export const userRoutes = router;
