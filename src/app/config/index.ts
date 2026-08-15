@@ -32,7 +32,7 @@ export default {
 	google_app_smtp_password: process.env.GOOGLE_APP_SMTP_PASSWORD!,
 	send_email: process.env.EMAIL_SENDER!,
 	login_url: process.env.LOGIN_URL!,
-	cloudinary_cloud_name : process.env.CLOUDINARY_CLOUD_NAME!,
+	cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
 	cloudinary_api_key: process.env.CLOUDINARY_API_KEY!,
 	cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET!,
 };
