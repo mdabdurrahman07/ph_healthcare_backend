@@ -34,7 +34,7 @@ app.use("/api/v1/auth", AuthRoutes);
 // ? User routes
 app.use("/api/v1/user", userRoutes);
 // ? Appointments routes
-app.use("/api/v1/appointment", appointmentRoutes)
+app.use("/api/v1/appointment", appointmentRoutes);
 
 // Basic route
 app.get("/", async (req: Request, res: Response) => {

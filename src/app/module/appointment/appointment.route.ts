@@ -5,6 +5,11 @@ import { Role } from "../../../../generated/enums";
 
 const router = Router();
 
-router.post("/book-appointment", auth(Role.ADMIN, Role.PATIENT, Role.SUPER_ADMIN), appointmentControllers.bookAppointments)
+router.post(
+	"/book-appointment",
+	auth(Role.ADMIN, Role.PATIENT, Role.SUPER_ADMIN),
+	appointmentControllers.bookAppointments,
+);
+router.get("/book-appointment/payment/callback", appointmentControllers.bookingCallBack);
 
 export const appointmentRoutes = router;
