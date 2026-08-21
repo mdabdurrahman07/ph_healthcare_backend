@@ -5,7 +5,9 @@ import { appointmentsServices } from "./appointment.service";
 import { sendResponse } from "../../utils/sendResponse";
 
 const bookAppointments = catchAsync(async (req: Request, res: Response) => {
-	const result = await appointmentsServices.createNewBooking();
+	const payload = req.body;
+	const user = req.user;
+	const result = await appointmentsServices.createNewBooking(payload, user!);
 
 	sendResponse(res, {
 		statusCode: httpStatus.CREATED,
@@ -16,18 +18,18 @@ const bookAppointments = catchAsync(async (req: Request, res: Response) => {
 });
 
 const bookingCallBack = catchAsync(async (req: Request, res: Response) => {
-
-  const {result, redirectUrl} = await appointmentsServices.bookingAppointmentCallback(req.query)
-  res.redirect(redirectUrl)
-  	// sendResponse(res, {
+	const { result, redirectUrl } =
+		await appointmentsServices.bookingAppointmentCallback(req.query);
+	res.redirect(redirectUrl);
+	// sendResponse(res, {
 	// 	statusCode: httpStatus.OK,
 	// 	success: true,
 	// 	message: "Booking CallBack",
 	// 	data: result,
 	// });
-})
+});
 
 export const appointmentControllers = {
 	bookAppointments,
-  bookingCallBack
+	bookingCallBack,
 };

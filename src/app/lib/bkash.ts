@@ -77,7 +77,7 @@ const generateBkashAccessToken = async (): Promise<string> => {
 		},
 	);
 
-  console.log(response)
+	// console.log(response);
 
 	if (!response.ok) {
 		throw new Error("Failed to generate bKash access token");

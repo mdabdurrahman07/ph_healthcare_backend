@@ -7,9 +7,12 @@ const router = Router();
 
 router.post(
 	"/book-appointment",
-	auth(Role.ADMIN, Role.PATIENT, Role.SUPER_ADMIN),
+	auth(Role.PATIENT),
 	appointmentControllers.bookAppointments,
 );
-router.get("/book-appointment/payment/callback", appointmentControllers.bookingCallBack);
+router.get(
+	"/book-appointment/payment/callback",
+	appointmentControllers.bookingCallBack,
+);
 
 export const appointmentRoutes = router;
