@@ -18,15 +18,9 @@ const bookAppointments = catchAsync(async (req: Request, res: Response) => {
 });
 
 const bookingCallBack = catchAsync(async (req: Request, res: Response) => {
-	const { result, redirectUrl } =
+	const {redirectUrl } =
 		await appointmentsServices.bookingAppointmentCallback(req.query);
 	res.redirect(redirectUrl);
-	// sendResponse(res, {
-	// 	statusCode: httpStatus.OK,
-	// 	success: true,
-	// 	message: "Booking CallBack",
-	// 	data: result,
-	// });
 });
 
 export const appointmentControllers = {
