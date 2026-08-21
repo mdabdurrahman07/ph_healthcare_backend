@@ -10,6 +10,16 @@ router.post(
 	auth(Role.PATIENT),
 	appointmentControllers.bookAppointments,
 );
+router.post(
+	"/pay-appointment",
+	auth(Role.PATIENT),
+	appointmentControllers.payAppointment,
+);
+router.post(
+	"/cancel-appointment",
+	auth(Role.PATIENT),
+	appointmentControllers.cancelAppointment,
+);
 router.get(
 	"/book-appointment/payment/callback",
 	appointmentControllers.bookingCallBack,
