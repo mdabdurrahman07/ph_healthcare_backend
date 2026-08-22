@@ -1,7 +1,5 @@
-const applyAsDoctorService = async () => {
-
-}
+const applyAsDoctorService = async () => {};
 
 export const doctorServices = {
-    applyAsDoctorService
-}
+	applyAsDoctorService,
+};
