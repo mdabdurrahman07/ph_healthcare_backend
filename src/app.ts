@@ -12,6 +12,7 @@ import { notFound } from "./app/middleware/notFound";
 import { AuthRoutes } from "./app/module/auth/auth.route";
 import { userRoutes } from "./app/module/user/user.route";
 import { appointmentRoutes } from "./app/module/appointment/appointment.route";
+import { doctorRoutes } from "./app/module/doctor/doctor.route";
 
 const app: Application = express();
 
@@ -35,7 +36,8 @@ app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/user", userRoutes);
 // ? Appointments routes
 app.use("/api/v1/appointment", appointmentRoutes);
-
+// ? Doctors routes 
+app.use("api/v1/doctor", doctorRoutes)
 // Basic route
 app.get("/", async (req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({
