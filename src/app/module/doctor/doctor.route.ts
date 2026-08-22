@@ -7,15 +7,15 @@ const router = Router();
 router.post(
 	"/apply_as_doctor",
 	upload.fields([
-        {
-            name: "resume",
-            maxCount: 1
-        }, 
-        {
-            name: "additionalFiles",
-            maxCount: 10
-        }
-    ]),
+		{
+			name: "resume",
+			maxCount: 1,
+		},
+		{
+			name: "additionalFiles",
+			maxCount: 10,
+		},
+	]),
 	doctorControllers.applyAsDoctorController,
 );
 

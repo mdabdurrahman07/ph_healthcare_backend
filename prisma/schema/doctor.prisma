@@ -9,7 +9,8 @@ model Doctor {
   qualifications     String
   bio                String?
   resume             String?
-  additionalFiles    String[]                 @default([""])
+  resumePublicId     String?
+  additionalFiles    Json?
   consultationFee    Decimal?                 @db.Decimal(10, 2)
   contactNumber      String?
   verificationStatus DoctorVerificationStatus @default(PENDING)
