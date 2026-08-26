@@ -144,7 +144,7 @@ export const seedTesterDoctor = async () => {
 						specialization: "Test",
 						licenseNumber: "A-#####",
 						qualificationYears: 1,
-						qualifications: "MBBS",					
+						qualifications: "MBBS",
 					},
 				},
 			},

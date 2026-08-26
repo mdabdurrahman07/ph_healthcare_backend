@@ -1,6 +1,6 @@
+import { catchAsync } from "./../../utils/catchAsync";
 import type { Request, Response } from "express";
 import httpStatus from "http-status";
-import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendResponse";
 import { doctorServices } from "./doctor.service";
 
@@ -13,7 +13,11 @@ const applyAsDoctorController = catchAsync(
 		if (!resume) {
 			throw new Error("Resume file is required");
 		}
-		const result = await doctorServices.applyAsDoctorService(data, resume, additionalFiles);
+		const result = await doctorServices.applyAsDoctorService(
+			data,
+			resume,
+			additionalFiles,
+		);
 		sendResponse(res, {
 			success: true,
 			statusCode: httpStatus.OK,
@@ -24,21 +28,34 @@ const applyAsDoctorController = catchAsync(
 );
 
 const verifyDoctorEmail = catchAsync(async (req: Request, res: Response) => {
-	const payload = req.body
+	const payload = req.body;
 
-	const result = await doctorServices.verifyDoctorEmail(payload)
+	const result = await doctorServices.verifyDoctorEmail(payload);
 
 	sendResponse(res, {
-			success: true,
-			statusCode: httpStatus.OK,
-			message: "Doctor verification successful",
-			data: result,
-		});
+		success: true,
+		statusCode: httpStatus.OK,
+		message: "Doctor verification successful",
+		data: result,
+	});
+});
 
+const verifyDoctor = catchAsync(async (req: Request, res: Response) => {
+	const payload = req.body;
+	const user = req.user!;
 
-})
+	const result = await doctorServices.approveDoctor(payload, user);
+
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Doctor Email Verified",
+		data: result,
+	});
+});
 
 export const doctorControllers = {
 	applyAsDoctorController,
-	verifyDoctorEmail
+	verifyDoctorEmail,
+	verifyDoctor,
 };
