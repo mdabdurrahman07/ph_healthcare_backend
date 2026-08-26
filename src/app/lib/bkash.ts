@@ -1,5 +1,7 @@
 import config from "../config";
 import { redisClient } from "./redis";
+import { AppError } from "../utils/AppError";
+import httpStatus from "http-status";
 
 const BKASH_ID_TOKEN_KEY = "Bkash:idToken";
 const BKASH_REFRESH_TOKEN_KEY = "Bkash:refreshToken";
@@ -50,13 +52,19 @@ const refreshBkashAccessToken = async (
 	);
 
 	if (!response.ok) {
-		throw new Error("Failed to refresh bKash access token");
+		throw new AppError(
+			httpStatus.BAD_GATEWAY,
+			"Failed to refresh bKash access token",
+		);
 	}
 
 	const result = await response.json();
 
 	if (!result.id_token) {
-		throw new Error("bKash refresh response does not contain an access token");
+		throw new AppError(
+			httpStatus.BAD_GATEWAY,
+			"bKash refresh response does not contain an access token",
+		);
 	}
 
 	await saveBkashAccessToken(result.id_token);
@@ -80,13 +88,16 @@ const generateBkashAccessToken = async (): Promise<string> => {
 	// console.log(response);
 
 	if (!response.ok) {
-		throw new Error("Failed to generate bKash access token");
+		throw new AppError(
+			httpStatus.BAD_GATEWAY,
+			"Failed to generate bKash access token",
+		);
 	}
 
 	const result = await response.json();
 
 	if (!result.id_token || !result.refresh_token) {
-		throw new Error("Invalid bKash token response");
+		throw new AppError(httpStatus.BAD_GATEWAY, "Invalid bKash token response");
 	}
 
 	await saveBkashAccessToken(result.id_token);

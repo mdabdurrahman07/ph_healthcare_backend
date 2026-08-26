@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import httpStatus from "http-status";
 import { sendResponse } from "../../utils/sendResponse";
 import { doctorServices } from "./doctor.service";
+import { AppError } from "../../utils/AppError";
 
 const applyAsDoctorController = catchAsync(
 	async (req: Request, res: Response) => {
@@ -11,7 +12,7 @@ const applyAsDoctorController = catchAsync(
 		const additionalFiles = files?.["additionalFiles"] || [];
 		const data = JSON.parse(req.body.data);
 		if (!resume) {
-			throw new Error("Resume file is required");
+			throw new AppError(httpStatus.BAD_REQUEST, "Resume file is required");
 		}
 		const result = await doctorServices.applyAsDoctorService(
 			data,

@@ -1,4 +1,4 @@
-import { DoctorVerificationStatus } from "../../../../generated/enums";
+import type { DoctorVerificationStatus } from "../../../../generated/enums";
 
 export interface IDoctor {
 	doctor: {

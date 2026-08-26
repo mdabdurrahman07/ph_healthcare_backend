@@ -1,9 +1,14 @@
 import { deleteFromCloudinary, uploadOnCloudinary } from "../../lib/cloudinary";
 import { prisma } from "../../lib/prisma";
+import { AppError } from "../../utils/AppError";
+import httpStatus from "http-status";
 
 const uploadProfileImage = async (buffer: Buffer, userId: string) => {
 	if (!buffer) {
-		throw new Error("No file buffer provided for profile image upload");
+		throw new AppError(
+			httpStatus.BAD_REQUEST,
+			"No file buffer provided for profile image upload",
+		);
 	}
 
 	const existingUser = await prisma.user.findUnique({
