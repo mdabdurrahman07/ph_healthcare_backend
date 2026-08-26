@@ -7,6 +7,11 @@ import {
 import bcrypt from "bcryptjs";
 import config from "../../config";
 import { Role } from "../../../../generated/enums";
+import crypto from "crypto";
+import { redisClient } from "../../lib/redis";
+import { transporter } from "../../lib/nodemailer";
+import path from "path";
+import ejs from "ejs";
 
 const applyAsDoctorService = async (
   payload: IDoctor,
@@ -50,9 +55,49 @@ const applyAsDoctorService = async (
 	  }
     },
   });
+
+  // redis 
+
+  const expirationSeconds = 60 * 60 // 1 hr
+
+  const otpKey = `doctor-app:otp:${payload.user.email}`
+  const otp = crypto.randomInt(100000, 1000000).toString();
+
+  await redisClient.set(otpKey, otp, {
+    expiration:{
+      type: "EX",
+      value: expirationSeconds
+    }
+  })
+
+  // ejs email to verification
+
+    const templatePath = path.join(
+      process.cwd(),
+      "src/app/templates/doctor-verification.ejs",
+    );
+  
+    const doctorVerificationHtmlContent = await ejs.renderFile(templatePath, {
+      otp: otp,
+      expiryMinutes: expirationSeconds / 60,
+      userName: payload.user.name,
+    });
+  
+    await transporter.sendMail({
+      from: config.send_email,
+      to: payload.user.email,
+      subject: "Doctor Verification OTP",
+      html: doctorVerificationHtmlContent,
+    });
+
   return doctorApplication
 };
 
+const verifyDoctorEmail = async (payload: {email: string, otp: string}) => {
+  
+}
+
 export const doctorServices = {
   applyAsDoctorService,
+  verifyDoctorEmail
 };
