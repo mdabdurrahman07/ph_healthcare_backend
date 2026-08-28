@@ -1,16 +1,95 @@
-import { AppointmentStatus, PaymentStatus } from "../../../../generated/enums";
+import { AppointmentStatus, PaymentStatus, ScheduleStatus } from "../../../../generated/enums";
 import config from "../../config";
 import { getBkashIdToken } from "../../lib/bkash";
 import { prisma } from "../../lib/prisma";
 import type { RequestUser } from "../../middleware/checkAuth";
 import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
+import { IBookAppointmentPayload } from "./appointment.interface";
+import { isBefore, isSameDay } from "date-fns";
 
-const createNewBooking = async (payload: any, user: RequestUser) => {
+const createNewBooking = async (payload: IBookAppointmentPayload, user: RequestUser) => {
 	const transactionResult = await prisma.$transaction(async (tx) => {
+		const patient = await prisma.patient.findUnique({
+			where:{
+				userId: user.userId
+			}
+		})
+		if(!patient){
+			throw new AppError(httpStatus.NOT_FOUND, "Patient Profile Not Found")
+		}
+		const schedule = await prisma.schedule.findUnique({
+			where: { id: payload.scheduleId },
+			include: { doctor: true },
+		});
+
+		if (!schedule || schedule.isDeleted) {
+			throw new AppError(httpStatus.NOT_FOUND, "Schedule Not Found");
+		}
+
+		if (schedule.status !== ScheduleStatus.PUBLISHED) {
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"This Schedule Is Not Published Yet",
+			);
+		}
+
+		const now = new Date()
+
+		if(!isSameDay(now, schedule.startDateTime)){
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"This Schedule Is Not Available Today",
+			);
+		}
+
+		if(!isBefore(now, schedule.startDateTime)){
+			throw new AppError(
+				httpStatus.BAD_REQUEST,
+				"This Schedule Has Already Started",
+			);
+		}
+		// can't take same appointment in single day
+		const existingAppointment = await prisma.appointment.findFirst({
+			where:{
+				patientId: patient.id,
+				scheduleId: schedule.id,
+				// status:{
+				// 	not: AppointmentStatus.CANCELLED
+				// }
+			}
+		})
+		if(existingAppointment?.status === AppointmentStatus.PENDING){
+			throw new AppError(httpStatus.BAD_REQUEST, "You Already Have A Pending Appointment")
+
+		}
+		if(existingAppointment?.status === AppointmentStatus.CONFIRMED){
+			throw new AppError(httpStatus.BAD_REQUEST, "You Already Have A Confirmed Appointment")
+
+		}
+		if(existingAppointment?.status === AppointmentStatus.ONGOING){
+			throw new AppError(httpStatus.BAD_REQUEST, "You Already Have A Ongoing Appointment")
+
+		}
+		if(existingAppointment?.status === AppointmentStatus.COMPLETED){
+			throw new AppError(httpStatus.BAD_REQUEST, "You Already Have A Completed Appointment On This Schedule. Please Try Again Another Day")
+
+		}
+		if(schedule.availableSlots === 0){
+			throw new AppError(httpStatus.BAD_REQUEST, "This Schedule Is Fully Booked")
+		}
+		if(!schedule.doctor.consultationFee){
+			throw new AppError(httpStatus.BAD_REQUEST, "Doctor Has Not Set A Consultation Fee Yet")
+		}
+
+		const amount = schedule.doctor.consultationFee.toString()
+
 		const appointment = await tx.appointment.create({
 			data: {
 				status: AppointmentStatus.PENDING,
+				patientId: patient.id,
+				doctorId: schedule.doctor.id,
+				scheduleId: schedule.id,	
 			},
 		});
 
@@ -38,7 +117,7 @@ const createNewBooking = async (payload: any, user: RequestUser) => {
 					// payerReference: "01723888888", //user email or phone number
 					payerReference: user.email, //user email or phone number
 					callbackURL: `${config.bkash_callback_url}/appointment/book-appointment/payment/callback`,
-					amount: "1200",
+					amount: amount,
 					currency: "BDT",
 					intent: "sale",
 					// merchantInvoiceNumber: "Inv4", // apppointment id
@@ -57,7 +136,7 @@ const createNewBooking = async (payload: any, user: RequestUser) => {
 			data: {
 				merchantInvoiceNumber: appointment.id,
 				appointmentId: appointment.id,
-				amount: "1200",
+				amount: amount,
 				gatewayResponse: bkashCreatePaymentResult,
 				bkashPaymentId: bkashCreatePaymentResult.paymentID,
 			},

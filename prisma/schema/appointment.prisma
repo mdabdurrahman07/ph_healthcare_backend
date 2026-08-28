@@ -1,12 +1,12 @@
 model Appointment {
   id                   String            @id @default(uuid())
   status               AppointmentStatus @default(PENDING)
-  joiningTime          DateTime
+  joiningTime          DateTime?
   recordUrl            String?
   recordPublicId       String?
   prescriptionUrl      String?
   prescriptionPublicId String?
-  serialNumber         Int
+  serialNumber         Int?
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
   payments             Payment?
