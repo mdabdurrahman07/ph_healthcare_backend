@@ -13,6 +13,7 @@ import { AuthRoutes } from "./app/module/auth/auth.route";
 import { userRoutes } from "./app/module/user/user.route";
 import { appointmentRoutes } from "./app/module/appointment/appointment.route";
 import { doctorRoutes } from "./app/module/doctor/doctor.route";
+import { scheduleRoutes } from "./app/module/schedule/schedule.route";
 
 const app: Application = express();
 
@@ -38,6 +39,8 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/appointment", appointmentRoutes);
 // ? Doctors routes
 app.use("/api/v1/doctor", doctorRoutes);
+// ? Schedule routes
+app.use("/api/v1/schedule", scheduleRoutes);
 // Basic route
 app.get("/", async (req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({
