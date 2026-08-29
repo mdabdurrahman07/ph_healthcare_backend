@@ -49,9 +49,94 @@ const bookingCallBack = catchAsync(async (req: Request, res: Response) => {
 	res.redirect(redirectUrl);
 });
 
+const updateAppointmentStatus = catchAsync(
+	async (req: Request, res: Response) => {
+		const appointmentId = req.params.appointmentId as string;
+		const payload = req.body;
+		const user = req.user!;
+
+		const result = await appointmentsServices.updateAppointment(
+			appointmentId,
+			payload,
+			user,
+		);
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Appointment Status Updated Successfully",
+			data: result,
+		});
+	},
+);
+
+const getMyAppointment = catchAsync(async (req: Request, res: Response) => {
+	const user = req.user!;
+
+	const { data, meta } = await appointmentsServices.getMyAppointment(
+		req.query,
+		user,
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Appointments Retrieved Successfully",
+		data,
+		meta,
+	});
+});
+const getDoctorAppointments = catchAsync(
+	async (req: Request, res: Response) => {
+		const user = req.user!;
+
+		const { data, meta } = await appointmentsServices.getDoctorAppointments(
+			req.query,
+			user,
+		);
+		sendResponse(res, {
+			statusCode: httpStatus.OK,
+			success: true,
+			message: "Appointments Retrieved Successfully",
+			data,
+			meta,
+		});
+	},
+);
+const getAllAppointments = catchAsync(async (req: Request, res: Response) => {
+	const { data, meta } = await appointmentsServices.getAllAppointments(
+		req.query,
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Appointments Retrieved Successfully",
+		data,
+		meta,
+	});
+});
+const getSingleAppointment = catchAsync(async (req: Request, res: Response) => {
+	const appointmentId = req.params.appointmentId as string;
+	const user = req.user!;
+
+	const result = await appointmentsServices.getSingleAppointment(
+		appointmentId,
+		user,
+	);
+	sendResponse(res, {
+		statusCode: httpStatus.OK,
+		success: true,
+		message: "Appointment Retrieved Successfully",
+		data: result,
+	});
+});
+
 export const appointmentControllers = {
 	bookAppointments,
 	bookingCallBack,
 	payAppointment,
 	cancelAppointment,
+	getMyAppointment,
+	getDoctorAppointments,
+	getAllAppointments,
+	getSingleAppointment,
+	updateAppointmentStatus,
 };
