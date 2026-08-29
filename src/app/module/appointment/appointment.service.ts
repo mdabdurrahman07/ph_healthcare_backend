@@ -11,9 +11,10 @@ import { AppError } from "../../utils/AppError";
 import httpStatus from "http-status";
 import {
 	IBookAppointmentPayload,
+	ICancelAppointmentPayload,
 	IPayAppointmentPayload,
 } from "./appointment.interface";
-import { addMinutes, isBefore, isSameDay } from "date-fns";
+import { addMinutes, isBefore, isSameDay, subHours } from "date-fns";
 import { transporter } from "../../lib/nodemailer";
 import PDFDocument from "pdfkit";
 
@@ -447,16 +448,20 @@ const bookingAppointmentCallback = async (query: Record<string, any>) => {
 	return transaction;
 };
 
-const cancelAppointment = async (payload: any, user: RequestUser) => {
+const cancelAppointment = async (payload: ICancelAppointmentPayload, user: RequestUser) => {
 	const transactionResult = await prisma.$transaction(async (tx) => {
 		const appointmentId = payload.appointmentId;
 
 		const existingAppointment = await tx.appointment.findUnique({
 			where: {
 				id: appointmentId,
+				patient: {
+					email: user.email
+				}
 			},
 			include: {
 				payments: true,
+				schedule: true
 			},
 		});
 		const bkashIdToken = await getBkashIdToken();
@@ -492,11 +497,30 @@ const cancelAppointment = async (payload: any, user: RequestUser) => {
 				id: existingAppointment.id,
 			},
 			data: {
-				status: "CANCELLED",
+				status: AppointmentStatus.CANCELLED,
 			},
 		});
 
-		const bkashRefundPayment = await fetch(
+		await prisma.schedule.update({
+			where:{
+				id: existingAppointment.schedule.id
+			},
+			data:{
+				availableSlots: {increment: 1}
+			}
+		})
+
+		// refund process
+
+		const now = new Date()
+		// get the startDateTime
+		const startDateTime = existingAppointment.schedule.startDateTime
+		// less the hour like startHas 3.00PM here making it 2.00PM
+		const refundCutOffTime = subHours(startDateTime, 1)
+		const isEligibleForRefund = isBefore(now, refundCutOffTime)
+
+		if(isEligibleForRefund){
+					const bkashRefundPayment = await fetch(
 			`${config.bkash_sandbox_base_url}/v2/tokenized-checkout/refund/payment/transaction`,
 
 			{
@@ -514,7 +538,7 @@ const cancelAppointment = async (payload: any, user: RequestUser) => {
 
 		const refundResponse = await bkashRefundPayment.json();
 
-		const updatedPayment = await tx.payment.update({
+		await tx.payment.update({
 			where: {
 				appointmentId: existingAppointment.id,
 			},
@@ -527,10 +551,12 @@ const cancelAppointment = async (payload: any, user: RequestUser) => {
 				gatewayResponse: refundResponse,
 			},
 		});
+		}
+
+
 
 		return {
 			appointment: updateAppointment,
-			payment: updatedPayment,
 		};
 	});
 	return transactionResult;
