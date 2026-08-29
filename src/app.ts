@@ -49,7 +49,7 @@ app.use("/api/v1/payment", paymentRoutes);
 // ? Prescription routes
 app.use("/api/v1/prescription", PrescriptionRoutes);
 // ? Analytics Routes
-app.use("api/v1/analytic", analyticsRoutes)
+app.use("api/v1/analytic", analyticsRoutes);
 // Basic route
 app.get("/", async (req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({

@@ -6,21 +6,21 @@ import { Role } from "../../../../generated/enums";
 const router = Router();
 
 router.get(
-    "/patient-analytics",
-    auth(Role.PATIENT),
-    analyticsController.getPatientAnalytics,
+	"/patient-analytics",
+	auth(Role.PATIENT),
+	analyticsController.getPatientAnalytics,
 );
 
 router.get(
-    "/doctor-analytics",
-    auth(Role.DOCTOR),
-    analyticsController.getDoctorAnalytics,
+	"/doctor-analytics",
+	auth(Role.DOCTOR),
+	analyticsController.getDoctorAnalytics,
 );
 
 router.get(
-    "/admin-analytics",
-    auth(Role.ADMIN, Role.SUPER_ADMIN),
-    analyticsController.getAdminAnalytics,
+	"/admin-analytics",
+	auth(Role.ADMIN, Role.SUPER_ADMIN),
+	analyticsController.getAdminAnalytics,
 );
 
 export const analyticsRoutes = router;
