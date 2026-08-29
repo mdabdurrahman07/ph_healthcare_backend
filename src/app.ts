@@ -1,3 +1,4 @@
+import { PrescriptionRoutes } from "./app/module/prescription/prescription.route";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import express, {
@@ -14,6 +15,7 @@ import { userRoutes } from "./app/module/user/user.route";
 import { appointmentRoutes } from "./app/module/appointment/appointment.route";
 import { doctorRoutes } from "./app/module/doctor/doctor.route";
 import { scheduleRoutes } from "./app/module/schedule/schedule.route";
+import { paymentRoutes } from "./app/module/payment/payment.route";
 
 const app: Application = express();
 
@@ -41,6 +43,10 @@ app.use("/api/v1/appointment", appointmentRoutes);
 app.use("/api/v1/doctor", doctorRoutes);
 // ? Schedule routes
 app.use("/api/v1/schedule", scheduleRoutes);
+// ? Payment routes
+app.use("/api/v1/payment", paymentRoutes);
+// ? Prescription routes
+app.use("/api/v1/prescription", PrescriptionRoutes);
 // Basic route
 app.get("/", async (req: Request, res: Response) => {
 	res.status(httpStatus.OK).json({
