@@ -661,4 +661,5 @@ export const appointmentsServices = {
 	bookingAppointmentCallback,
 	payAppointment,
 	cancelAppointment,
+	updateAppointment
 };
