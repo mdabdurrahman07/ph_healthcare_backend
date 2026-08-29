@@ -12,7 +12,8 @@ export type CloudinaryFolder =
 	| "profileImages"
 	| "serviceImages"
 	| "categoryImages"
-	| "doctorDocuments";
+	| "doctorDocuments"
+	| "prescriptionDoc";
 
 export type CloudinaryResourceType = "auto" | "image" | "video" | "raw";
 
@@ -92,6 +93,24 @@ export const uploadDocumentOnCloudinary = async (file: Express.Multer.File) => {
 		originalName: file.originalname,
 		size: file.size,
 		mimeType: file.mimetype,
+	};
+};
+export const uploadPrescriptionDocumentOnCloudinary = async (file: Buffer) => {
+	const result = await uploadOnCloudinary(file, {
+		folder: "prescriptionDoc",
+		resource_type: "raw",
+		use_filename: false,
+		unique_filename: true,
+	});
+
+	return {
+		publicId: result.public_id,
+		url: result.secure_url,
+		resourceType: result.resource_type,
+		format: result.format,
+		originalName: "prescription.pdf",
+		size: result.bytes,
+		mimeType: "application/pdf",
 	};
 };
 

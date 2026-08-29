@@ -105,35 +105,35 @@ const getAllPayments = async (query: IQuery) => {
 };
 
 const singlePayment = async (paymentId: string, user: RequestUser) => {
-      const payment = await prisma.payment.findUnique({
-        where: { id: paymentId },
-        include: {
-            appointment: {
-                include: {
-                    patient: {
-                        select: { id: true, name: true, email: true, userId: true },
-                    },
-                    doctor: { select: { id: true, name: true, specialization: true } },
-                    schedule: true,
-                },
-            },
-        },
-    });
+	const payment = await prisma.payment.findUnique({
+		where: { id: paymentId },
+		include: {
+			appointment: {
+				include: {
+					patient: {
+						select: { id: true, name: true, email: true, userId: true },
+					},
+					doctor: { select: { id: true, name: true, specialization: true } },
+					schedule: true,
+				},
+			},
+		},
+	});
 
-    if (!payment) {
-        throw new AppError(httpStatus.NOT_FOUND, "Payment Not Found");
-    }
+	if (!payment) {
+		throw new AppError(httpStatus.NOT_FOUND, "Payment Not Found");
+	}
 
-    if (user.role === Role.PATIENT) {
-        if (payment.appointment.patient.userId !== user.userId) {
-            throw new AppError(
-                httpStatus.FORBIDDEN,
-                "You Are Not Allowed To View This Payment",
-            );
-        }
-    }
+	if (user.role === Role.PATIENT) {
+		if (payment.appointment.patient.userId !== user.userId) {
+			throw new AppError(
+				httpStatus.FORBIDDEN,
+				"You Are Not Allowed To View This Payment",
+			);
+		}
+	}
 
-    return payment
+	return payment;
 };
 
 export const paymentServices = {

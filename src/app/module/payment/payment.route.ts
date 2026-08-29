@@ -8,15 +8,15 @@ const router = Router();
 router.get("/my-payments", auth(Role.PATIENT), paymentController.getMyPayments);
 
 router.get(
-    "/all-payments",
-    auth(Role.ADMIN, Role.SUPER_ADMIN),
-    paymentController.getAllPayments,
+	"/all-payments",
+	auth(Role.ADMIN, Role.SUPER_ADMIN),
+	paymentController.getAllPayments,
 );
 
 router.get(
-    "/:paymentId",
-    auth(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN),
-    paymentController.getSinglePayment,
+	"/:paymentId",
+	auth(Role.PATIENT, Role.ADMIN, Role.SUPER_ADMIN),
+	paymentController.getSinglePayment,
 );
 
 export const PaymentRoutes = router;
