@@ -28,5 +28,26 @@ router.get(
 	auth(Role.ADMIN, Role.SUPER_ADMIN),
 	doctorControllers.getAllDoctors,
 );
+router.patch(
+	"/update-my-profile",
+	auth(Role.DOCTOR),
+	doctorControllers.updateDoctorProfile,
+);
+
+// Public doctor-discovery routes (no auth) — meant for patients browsing before login.
+router.get(
+	"/public/available-today",
+	doctorControllers.getAvailableDoctorByTodaysSchedule,
+);
+
+router.get(
+	"/public/all-doctors",
+	doctorControllers.getAllDoctorsListPublic,
+);
+
+router.get(
+	"/public/:doctorId",
+	doctorControllers.getSingleDoctorPublicProfile,
+);
 
 export const doctorRoutes = router;
