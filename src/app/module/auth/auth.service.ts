@@ -585,6 +585,7 @@ const resetPasswordService = async (payload: IResetPasswordPayload) => {
 	});
 };
 
+
 export const AuthService = {
 	registerPatient,
 	loginUser,
