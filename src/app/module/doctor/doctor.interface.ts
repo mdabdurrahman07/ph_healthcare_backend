@@ -14,7 +14,6 @@ export interface IDoctor {
 	user: {
 		name: string;
 		email: string;
-		password: string;
 	};
 }
 

@@ -44,10 +44,6 @@ const applyAsDoctorService = async (
       "User Already Exists with this email",
     );
   }
-  const hashedPassword = await bcrypt.hash(
-    payload.user.password,
-    Number(config.bcrypt_salt_rounds),
-  );
   const resumeResult = await uploadDocumentOnCloudinary(resume);
   const additionalFilesResult = additionalFiles?.length
     ? await uploadDocumentsOnCloudinary(additionalFiles)
@@ -56,7 +52,6 @@ const applyAsDoctorService = async (
   const doctorApplication = await prisma.user.create({
     data: {
       ...payload.user,
-      password: hashedPassword,
       role: Role.DOCTOR,
       doctor: {
         create: {
